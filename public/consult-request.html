@@ -1,0 +1,15 @@
+<input placeholder="ID Solicitud" id="idSolicitud">
+<button onclick="consultar()">Consultar</button>
+
+<div id="resultado"></div>
+
+<script>
+async function consultar() {
+  const res = await fetch("/solicitudes/" + idSolicitud.value);
+  const data = await res.json();
+  resultado.innerHTML = `
+    <p>Descripción: ${data.descripcion}</p>
+    <p>Estado: ${data.estado}</p>
+  `;
+}
+</script>

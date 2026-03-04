@@ -1,0 +1,21 @@
+<form id="formSolicitud">
+  <input placeholder="ID Cliente" id="cliente_id">
+  <textarea placeholder="Descripción" id="descripcion"></textarea>
+  <button>Guardar</button>
+</form>
+
+<script>
+document.getElementById("formSolicitud").onsubmit = async (e) => {
+  e.preventDefault();
+  const res = await fetch("/solicitudes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cliente_id: cliente_id.value,
+      descripcion: descripcion.value
+    })
+  });
+  const data = await res.json();
+  alert("Solicitud creada con ID: " + data.id);
+};
+</script>
