@@ -1,17 +1,72 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="es">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sistema de Solicitudes</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-10">
 
-<h1 class="text-3xl font-bold mb-6">Sistema de Solicitudes</h1>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100">
+  <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/60 backdrop-blur">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-white/10 ring-1 ring-white/15"></div>
+        <div>
+          <p class="text-sm text-slate-300">Panel</p>
+          <h1 class="text-lg font-semibold leading-tight">Sistema de Solicitudes</h1>
+        </div>
+      </div>
+      <span class="text-xs text-slate-400">Demo • Front simple</span>
+    </div>
+  </header>
 
-<div class="space-y-4">
-  <a href="register-client.html" class="block bg-blue-500 text-white p-3 rounded">Registrar Cliente</a>
-  <a href="register-request.html" class="block bg-green-500 text-white p-3 rounded">Registrar Solicitud</a>
-  <a href="consult-request.html" class="block bg-purple-500 text-white p-3 rounded">Consultar Estado</a>
-</div>
+  <main class="mx-auto max-w-5xl px-4 py-10">
+    <section class="rounded-3xl bg-white/5 p-8 ring-1 ring-white/10 shadow-xl">
+      <h2 class="text-3xl font-bold tracking-tight">Bienvenido</h2>
+      <p class="mt-2 text-slate-300">
+        Accesos rápidos para registrar clientes, crear solicitudes y consultar el estado.
+      </p>
 
+      <div class="mt-8 grid gap-4 sm:grid-cols-3">
+        <a href="register-client.html"
+           class="group rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 hover:bg-white/10 transition">
+          <p class="text-sm text-slate-300">Módulo</p>
+          <p class="mt-1 text-lg font-semibold">Registrar Cliente</p>
+          <p class="mt-2 text-sm text-slate-400">Crea un cliente con nombre, correo y teléfono.</p>
+          <div class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-300">
+            Abrir
+            <span class="transition group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+
+        <a href="register-request.html"
+           class="group rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 hover:bg-white/10 transition">
+          <p class="text-sm text-slate-300">Módulo</p>
+          <p class="mt-1 text-lg font-semibold">Registrar Solicitud</p>
+          <p class="mt-2 text-sm text-slate-400">Asocia una solicitud a un cliente existente.</p>
+          <div class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-emerald-300">
+            Abrir
+            <span class="transition group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+
+        <a href="consult-request.html"
+           class="group rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 hover:bg-white/10 transition">
+          <p class="text-sm text-slate-300">Módulo</p>
+          <p class="mt-1 text-lg font-semibold">Consultar Estado</p>
+          <p class="mt-2 text-sm text-slate-400">Busca una solicitud por ID y revisa su estado.</p>
+          <div class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-fuchsia-300">
+            Abrir
+            <span class="transition group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="mt-10 text-center text-xs text-slate-500">
+      Desafio 2 DSE UDB
+    </footer>
+  </main>
 </body>
 </html>

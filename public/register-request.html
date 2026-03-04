@@ -1,21 +1,111 @@
-<form id="formSolicitud">
-  <input placeholder="ID Cliente" id="cliente_id">
-  <textarea placeholder="Descripción" id="descripcion"></textarea>
-  <button>Guardar</button>
-</form>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registrar Solicitud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-<script>
-document.getElementById("formSolicitud").onsubmit = async (e) => {
-  e.preventDefault();
-  const res = await fetch("/solicitudes", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      cliente_id: cliente_id.value,
-      descripcion: descripcion.value
-    })
-  });
-  const data = await res.json();
-  alert("Solicitud creada con ID: " + data.id);
-};
-</script>
+<div id="toastWrap" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100">
+  <header class="border-b border-white/10 bg-slate-950/60 backdrop-blur">
+    <div class="mx-auto max-w-3xl px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-sm text-slate-300 hover:text-white">← Volver</a>
+      <h1 class="text-base font-semibold">Registrar Solicitud</h1>
+      <span class="text-xs text-slate-500">/solicitudes</span>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-10">
+    <section class="rounded-3xl bg-white/5 p-8 ring-1 ring-white/10 shadow-xl">
+      <p class="text-sm text-slate-300">
+        Crea una solicitud asociada a un <span class="text-slate-200 font-medium">ID de cliente</span>.
+      </p>
+
+      <form id="formSolicitud" class="mt-6 space-y-4">
+        <div>
+          <label class="text-sm text-slate-300" for="cliente_id">ID Cliente</label>
+          <input id="cliente_id" placeholder="Ej. 1"
+            class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
+                   focus:ring-2 focus:ring-emerald-500/60"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-300" for="descripcion">Descripción</label>
+          <textarea id="descripcion" rows="4" placeholder="Describe la solicitud..."
+            class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
+                   focus:ring-2 focus:ring-emerald-500/60"
+          ></textarea>
+        </div>
+
+        <button
+          class="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white
+                 hover:bg-emerald-400 active:bg-emerald-600 transition">
+          Guardar
+        </button>
+
+        <p class="text-xs text-slate-400">
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const toastWrap = document.getElementById("toastWrap");
+  
+    function toast(message, type = "ok") {
+      const el = document.createElement("div");
+  
+      const base = "rounded-2xl px-4 py-3 text-sm ring-1 shadow-xl backdrop-blur transition";
+      const styles = type === "ok"
+        ? "bg-emerald-500/15 text-emerald-200 ring-emerald-500/30"
+        : "bg-rose-500/15 text-rose-200 ring-rose-500/30";
+  
+      el.className = `${base} ${styles}`;
+      el.textContent = message;
+  
+      toastWrap.appendChild(el);
+  
+      setTimeout(() => el.classList.add("opacity-0", "translate-y-1"), 2200);
+      setTimeout(() => el.remove(), 2600);
+    }
+  
+    document.getElementById("formSolicitud").onsubmit = async (e) => {
+      e.preventDefault();
+  
+      const btn = e.target.querySelector("button");
+      const oldText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Guardando...";
+  
+      try {
+        const res = await fetch("/solicitudes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cliente_id: cliente_id.value,
+            descripcion: descripcion.value
+          })
+        });
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+          toast("No se pudo crear la solicitud. Revisa los datos.", "err");
+        } else {
+          toast("Solicitud creada ✅ ID: " + data.id, "ok");
+          e.target.reset();
+        }
+      } catch (err) {
+        toast("Error de conexión con el servidor.", "err");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
+    };
+  </script>
+</body>
+</html>
