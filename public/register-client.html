@@ -1,23 +1,114 @@
-<form id="formCliente" class="space-y-3">
-  <input class="border p-2 w-full" placeholder="Nombre" id="nombre">
-  <input class="border p-2 w-full" placeholder="Email" id="email">
-  <input class="border p-2 w-full" placeholder="Teléfono" id="telefono">
-  <button class="bg-blue-500 text-white p-2 rounded">Guardar</button>
-</form>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registrar Cliente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<div id="toastWrap" class="fixed top-4 right-4 z-50 space-y-2"></div>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100">
+  <header class="border-b border-white/10 bg-slate-950/60 backdrop-blur">
+    <div class="mx-auto max-w-3xl px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-sm text-slate-300 hover:text-white">← Volver</a>
+      <h1 class="text-base font-semibold">Registrar Cliente</h1>
+      <span class="text-xs text-slate-500">/clientes</span>
+    </div>
+  </header>
 
-<script>
-document.getElementById("formCliente").onsubmit = async (e) => {
-  e.preventDefault();
-  const res = await fetch("/clientes", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      nombre: nombre.value,
-      email: email.value,
-      telefono: telefono.value
-    })
-  });
-  const data = await res.json();
-  alert("Cliente registrado con ID: " + data.id);
-};
-</script>
+  <main class="mx-auto max-w-3xl px-4 py-10">
+    <section class="rounded-3xl bg-white/5 p-8 ring-1 ring-white/10 shadow-xl">
+      <p class="text-sm text-slate-300">Ingresa los datos del cliente</p>
+
+      <form id="formCliente" class="mt-6 space-y-4">
+        <div>
+          <label class="text-sm text-slate-300" for="nombre">Nombre</label>
+          <input id="nombre" placeholder="Ej. Juan Pérez"
+            class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
+                   focus:ring-2 focus:ring-sky-500/60"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-300" for="email">Email</label>
+          <input id="email" type="email" placeholder="ejemplo@correo.com"
+            class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
+                   focus:ring-2 focus:ring-sky-500/60"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-300" for="telefono">Teléfono</label>
+          <input id="telefono" placeholder="####-####"
+            class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
+                   focus:ring-2 focus:ring-sky-500/60"
+          />
+        </div>
+
+        <button
+          class="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white
+                 hover:bg-sky-400 active:bg-sky-600 transition">
+          Guardar
+        </button>
+
+        <p class="text-xs text-slate-400">
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const toastWrap = document.getElementById("toastWrap");
+  
+    function toast(message, type = "ok") {
+      const el = document.createElement("div");
+      const base = "rounded-2xl px-4 py-3 text-sm ring-1 shadow-xl backdrop-blur";
+      const styles = type === "ok"
+        ? "bg-emerald-500/15 text-emerald-200 ring-emerald-500/30"
+        : "bg-rose-500/15 text-rose-200 ring-rose-500/30";
+  
+      el.className = `${base} ${styles}`;
+      el.textContent = message;
+  
+      toastWrap.appendChild(el);
+      setTimeout(() => el.classList.add("opacity-0", "translate-y-1"), 2200);
+      setTimeout(() => el.remove(), 2600);
+    }
+  
+    document.getElementById("formCliente").onsubmit = async (e) => {
+      e.preventDefault();
+  
+      const btn = e.target.querySelector("button");
+      const oldText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Guardando...";
+  
+      try {
+        const res = await fetch("/clientes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre: nombre.value,
+            email: email.value,
+            telefono: telefono.value
+          })
+        });
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+          toast("No se pudo registrar el cliente. Revisa los datos.", "err");
+        } else {
+          toast("Cliente registrado ✅ ID: " + data.id, "ok");
+          e.target.reset();
+        }
+      } catch (err) {
+        toast("Error de conexión con el servidor.", "err");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
+    };
+  </script>
+</body>
+</html>
