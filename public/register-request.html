@@ -25,9 +25,14 @@
       </p>
 
       <form id="formSolicitud" class="mt-6 space-y-4">
+
         <div>
           <label class="text-sm text-slate-300" for="cliente_id">ID Cliente</label>
-          <input id="cliente_id" placeholder="Ej. 1"
+
+          <input
+            id="cliente_id"
+            placeholder="Ej. 1"
+            inputmode="numeric"
             class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
                    focus:ring-2 focus:ring-emerald-500/60"
           />
@@ -35,7 +40,12 @@
 
         <div>
           <label class="text-sm text-slate-300" for="descripcion">Descripción</label>
-          <textarea id="descripcion" rows="4" placeholder="Describe la solicitud..."
+
+          <textarea
+            id="descripcion"
+            rows="4"
+            maxlength="200"
+            placeholder="Describe la solicitud..."
             class="mt-1 w-full rounded-xl bg-slate-950/40 border border-white/10 px-4 py-3 text-sm outline-none
                    focus:ring-2 focus:ring-emerald-500/60"
           ></textarea>
@@ -49,63 +59,116 @@
 
         <p class="text-xs text-slate-400">
         </p>
+
       </form>
     </section>
   </main>
 
-  <script>
-    const toastWrap = document.getElementById("toastWrap");
-  
-    function toast(message, type = "ok") {
-      const el = document.createElement("div");
-  
-      const base = "rounded-2xl px-4 py-3 text-sm ring-1 shadow-xl backdrop-blur transition";
-      const styles = type === "ok"
-        ? "bg-emerald-500/15 text-emerald-200 ring-emerald-500/30"
-        : "bg-rose-500/15 text-rose-200 ring-rose-500/30";
-  
-      el.className = `${base} ${styles}`;
-      el.textContent = message;
-  
-      toastWrap.appendChild(el);
-  
-      setTimeout(() => el.classList.add("opacity-0", "translate-y-1"), 2200);
-      setTimeout(() => el.remove(), 2600);
+<script>
+
+const toastWrap = document.getElementById("toastWrap");
+
+function toast(message, type = "ok") {
+
+  const el = document.createElement("div");
+
+  const base = "rounded-2xl px-4 py-3 text-sm ring-1 shadow-xl backdrop-blur transition";
+
+  const styles = type === "ok"
+    ? "bg-emerald-500/15 text-emerald-200 ring-emerald-500/30"
+    : "bg-rose-500/15 text-rose-200 ring-rose-500/30";
+
+  el.className = `${base} ${styles}`;
+
+  el.textContent = message;
+
+  toastWrap.appendChild(el);
+
+  setTimeout(() => el.classList.add("opacity-0","translate-y-1"),2200);
+  setTimeout(() => el.remove(),2600);
+}
+
+document.getElementById("formSolicitud").onsubmit = async (e) => {
+
+  e.preventDefault();
+
+  const clienteIdVal = cliente_id.value.trim();
+  const descripcionVal = descripcion.value.trim();
+
+  /* VALIDACIONES */
+
+  if (clienteIdVal === "") {
+    toast("Debes ingresar el ID del cliente.", "err");
+    return;
+  }
+
+  if (isNaN(clienteIdVal)) {
+    toast("El ID del cliente debe ser numérico.", "err");
+    return;
+  }
+
+  if (Number(clienteIdVal) <= 0) {
+    toast("El ID del cliente debe ser mayor que 0.", "err");
+    return;
+  }
+
+  if (descripcionVal.length < 5) {
+    toast("La descripción debe tener al menos 5 caracteres.", "err");
+    return;
+  }
+
+  if (descripcionVal.length > 200) {
+    toast("La descripción es demasiado larga.", "err");
+    return;
+  }
+
+  const btn = e.target.querySelector("button");
+  const oldText = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+
+  try {
+
+    const res = await fetch("/solicitudes", {
+
+      method: "POST",
+
+      headers: { "Content-Type": "application/json" },
+
+      body: JSON.stringify({
+        cliente_id: Number(clienteIdVal),
+        descripcion: descripcionVal
+      })
+
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+
+      toast("No se pudo crear la solicitud. Revisa los datos.", "err");
+
+    } else {
+
+      toast("Solicitud creada. ID: " + data.id, "ok");
+
+      e.target.reset();
     }
-  
-    document.getElementById("formSolicitud").onsubmit = async (e) => {
-      e.preventDefault();
-  
-      const btn = e.target.querySelector("button");
-      const oldText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = "Guardando...";
-  
-      try {
-        const res = await fetch("/solicitudes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cliente_id: cliente_id.value,
-            descripcion: descripcion.value
-          })
-        });
-  
-        const data = await res.json();
-  
-        if (!res.ok) {
-          toast("No se pudo crear la solicitud. Revisa los datos.", "err");
-        } else {
-          toast("Solicitud creada ✅ ID: " + data.id, "ok");
-          e.target.reset();
-        }
-      } catch (err) {
-        toast("Error de conexión con el servidor.", "err");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = oldText;
-      }
-    };
-  </script>
+
+  } catch (err) {
+
+    toast("Error de conexión con el servidor.", "err");
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+
+};
+
+</script>
+
 </body>
 </html>
